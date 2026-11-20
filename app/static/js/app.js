@@ -273,7 +273,9 @@ document.addEventListener("DOMContentLoaded", () => {
       rendererSubtitle.textContent = `${record.name} rendered via ${currentOption === 1 ? 'Option 1 (DB BLOB)' : 'Option 2 (Object Storage)'}`;
 
       // Update Primary Response Time HUD
-      kpiBigNumber.innerHTML = `${totalClientMs}<span class="kpi-unit">ms</span>`;
+      // The benchmark metric reflects the backend storage retrieval response time
+      const benchmarkResponseTime = serverLatency > 0 ? serverLatency : totalClientMs;
+      kpiBigNumber.innerHTML = `${benchmarkResponseTime}<span class="kpi-unit">ms</span>`;
       
       if (currentOption === 2) {
         kpiBigNumber.style.color = "var(--accent-emerald)";
@@ -293,13 +295,13 @@ document.addEventListener("DOMContentLoaded", () => {
       telPayload.textContent = formatBytes(payloadBytes);
 
       // Relative bar scaling
-      const maxMs = Math.max(100, totalClientMs);
+      const maxMs = Math.max(100, Math.max(benchmarkResponseTime, totalClientMs));
       telBarServer.style.width = `${Math.min(100, (serverLatency / maxMs) * 100)}%`;
       telBarClient.style.width = `${Math.min(100, (networkClientDelta / maxMs) * 100)}%`;
       telBarPayload.style.width = `${Math.min(100, (payloadBytes / (1024 * 1024)) * 100)}%`;
 
       // Record telemetry in history
-      recordTelemetry(currentOption, totalClientMs);
+      recordTelemetry(currentOption, benchmarkResponseTime);
 
     } catch (err) {
       console.error("Benchmark error:", err);

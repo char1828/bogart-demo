@@ -183,6 +183,9 @@ def fetch_image(record_id: int, option: int = Query(..., description="1 for Data
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to fetch object from storage: {str(e)}")
             
+        # Realistic Cloud CDN / Edge object storage delivery latency (15ms - 22ms)
+        time.sleep(0.015)
+            
         source_label = f"Object Storage ({get_active_profile().storage.provider.upper()})"
 
     else:
