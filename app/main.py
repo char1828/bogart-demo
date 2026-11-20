@@ -145,6 +145,12 @@ def fetch_image(record_id: int, option: int = Query(..., description="1 for Data
         "Content-Disposition": f'inline; filename="{filename}"'
     }
 
+    if option == 2:
+        headers["Cache-Control"] = "public, max-age=86400"
+    else:
+        headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        headers["Pragma"] = "no-cache"
+
     return StreamingResponse(
         io.BytesIO(raw_data),
         media_type=content_type,

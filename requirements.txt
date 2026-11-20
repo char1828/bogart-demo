@@ -13,4 +13,5 @@ pymssql>=2.2.0
 pg8000>=1.31.0
 a2wsgi>=1.10.0
 functions-framework>=3.8.0
+werkzeug>=3.0.0
 cloud-sql-python-connector>=1.8.0

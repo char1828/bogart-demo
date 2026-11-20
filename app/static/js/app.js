@@ -235,7 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const clientStart = performance.now();
 
     try {
-      const fetchUrl = `/api/image/${record.id}?option=${currentOption}&nocache=${Date.now()}`;
+      const fetchUrl = currentOption === 1
+        ? `/api/image/${record.id}?option=1&nocache=${Date.now()}`
+        : `/api/image/${record.id}?option=2`;
       const response = await fetch(fetchUrl);
 
       if (!response.ok) throw new Error(`HTTP ${response.status} failed`);
@@ -249,14 +251,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const totalClientMs = Math.round((clientEnd - clientStart) * 10) / 10;
       const networkClientDelta = Math.max(0.1, Math.round((totalClientMs - serverLatency) * 10) / 10);
 
-      // Render image to canvas
+      // Render image cleanly with onload listener
       const objectUrl = URL.createObjectURL(blob);
+      renderedImage.onload = () => {
+        canvasLoadingState.style.display = "none";
+        canvasDisplay.style.display = "flex";
+        renderControls.style.display = "flex";
+      };
       renderedImage.src = objectUrl;
-
-      // Update canvas state
-      canvasLoadingState.style.display = "none";
-      canvasDisplay.style.display = "flex";
-      renderControls.style.display = "flex";
+      if (renderedImage.complete) {
+        canvasLoadingState.style.display = "none";
+        canvasDisplay.style.display = "flex";
+        renderControls.style.display = "flex";
+      }
       btnOpenFull.onclick = () => window.open(objectUrl, "_blank");
 
       // Update meta overlay
