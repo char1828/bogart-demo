@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOGART DEMO</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    
+    <!-- Top Enterprise Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-mark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="title-row">
+            <h1>BOGART DEMO <span class="tag-version">Live Studio</span></h1>
+            <span class="status-indicator-live"><span class="dot"></span> Live Studio</span>
+          </div>
+          <p class="subtitle">Cloud Architecture Comparison: Relational DB BLOB vs. Cloud Object Storage</p>
+        </div>
+      </div>
+
+      <!-- Environment & Target Cloud Pills -->
+      <div class="header-center">
+        <div class="cloud-stack-card">
+          <div class="stack-env-toggle">
+            <button class="env-chip active" id="chip-env-dev" title="GCP Dev Environment: Cloud SQL + GCS">
+              <span class="env-icon">☁️</span> GCP Dev
+            </button>
+            <button class="env-chip" id="chip-env-prod" title="Azure Deployment: Azure SQL / MSSQL + ADLS">
+              <span class="env-icon">🔷</span> Azure Target
+            </button>
+          </div>
+          <div class="stack-specs" id="stack-specs">
+            <span class="spec-item"><span class="spec-k">DB:</span> <span class="spec-v" id="pill-db">Cloud SQL / MySQL</span></span>
+            <span class="spec-sep">•</span>
+            <span class="spec-item"><span class="spec-k">Storage:</span> <span class="spec-v" id="pill-storage">Google Cloud Storage (GCS)</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="header-right">
+        <button id="btn-seed" class="action-btn action-btn-secondary" title="Seed 15 calibrated benchmark assets">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
+          Reseed Data
+        </button>
+        <button id="btn-open-arch" class="action-btn action-btn-secondary" title="View Whiteboard Architecture Blueprint">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          Architecture Blueprint
+        </button>
+        <button id="btn-open-upload" class="action-btn action-btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Upload Asset
+        </button>
+      </div>
+    </header>
+
+    <!-- Interactive Architecture Banner / Option Selector (Mockup Blueprint) -->
+    <section class="blueprint-selector-section">
+      <div class="selector-container">
+        
+        <div class="selector-dropdown-box">
+          <label for="storage-option-select" class="selector-heading">
+            <span class="heading-badge">Storage Mode Selection</span>
+            <span class="heading-sub">Compare database vs object storage performance</span>
+          </label>
+          <div class="custom-select-wrapper">
+            <select id="storage-option-select" class="styled-dropdown">
+              <option value="1">Option 1 - Database BLOB (Heavy DB, All-in-One)</option>
+              <option value="2" selected>Option 2 - Object Storage (GCS / ADLS / S3 + Metadata DB)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Architectural Workflow Visualizer -->
+        <div class="arch-flow-diagram" id="arch-flow-diagram">
+          <div class="flow-step step-ui">
+            <div class="step-icon">🖥️</div>
+            <div class="step-label">JS Client UI</div>
+            <div class="step-sub">Fetch Request</div>
+          </div>
+          
+          <div class="flow-arrow-wrapper">
+            <div class="flow-line animated-pulse" id="flow-line-1"></div>
+            <span class="flow-arrow-text" id="flow-arrow-text-1">Image ID</span>
+          </div>
+
+          <div class="flow-step step-backend">
+            <div class="step-icon">⚙️</div>
+            <div class="step-label">Backend API</div>
+            <div class="step-sub">Query Router</div>
+          </div>
+
+          <div class="flow-arrow-wrapper">
+            <div class="flow-line animated-pulse" id="flow-line-2"></div>
+            <span class="flow-arrow-text" id="flow-arrow-text-2">Metadata + Bucket Stream</span>
+          </div>
+
+          <div class="flow-dest-group" id="flow-dest-group">
+            <div class="flow-step step-db" id="step-db-target">
+              <div class="step-icon">🗄️</div>
+              <div class="step-label" id="flow-db-title">Cloud SQL</div>
+              <div class="step-sub" id="flow-db-sub">Metadata Only</div>
+            </div>
+            
+            <div class="flow-step step-storage" id="step-storage-target">
+              <div class="step-icon">🪣</div>
+              <div class="step-label" id="flow-storage-title">GCS Bucket</div>
+              <div class="step-sub">Binary Images</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Main Core Benchmarking Split Workspace -->
+    <main class="workbench-main">
+
+      <!-- LEFT COLUMN: Metadata Table Panel -->
+      <section class="workbench-panel panel-left">
+        <div class="panel-header">
+          <div class="header-title-group">
+            <div class="panel-badge-icon">📋</div>
+            <div>
+              <h2 class="panel-title">Metadata Records Table</h2>
+              <p class="panel-subtitle" id="table-subtitle">Metadata loaded without binary overhead</p>
+            </div>
+          </div>
+          <div class="header-controls">
+            <div class="search-input-wrapper">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="table-search" placeholder="Filter images..." />
+            </div>
+            <button id="btn-refresh" class="icon-button" title="Refresh Table">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="benchmark-table" id="metadata-table">
+            <thead>
+              <tr>
+                <th class="col-id">ID</th>
+                <th class="col-name">Image Name</th>
+                <th class="col-size">Payload</th>
+                <th class="col-mime">MIME</th>
+                <th class="col-path" id="th-path">Storage URI / Path</th>
+                <th class="col-action">Action</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <tr>
+                <td colspan="6" class="empty-cell">
+                  <div class="loading-spinner"></div>
+                  <span>Loading metadata catalog...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel-footer">
+          <div class="footer-stat">
+            <span class="footer-stat-label">Total Records:</span>
+            <span class="footer-stat-val" id="record-count">--</span>
+          </div>
+          <div class="footer-stat">
+            <span class="footer-stat-label">Fetch Strategy:</span>
+            <span class="footer-stat-badge" id="footer-strategy-badge">On-Demand Stream</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Image Renderer Area & Response Time in MS -->
+      <section class="workbench-panel panel-right">
+        <div class="panel-header">
+          <div class="header-title-group">
+            <div class="panel-badge-icon">🖼️</div>
+            <div>
+              <h2 class="panel-title">Image Renderer Area</h2>
+              <p class="panel-subtitle" id="renderer-subtitle">Click a row on the left to measure fetch latency</p>
+            </div>
+          </div>
+          <div class="render-controls" id="render-controls" style="display: none;">
+            <button id="btn-open-full" class="chip-btn" title="View Full Resolution">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Full Res
+            </button>
+          </div>
+        </div>
+
+        <!-- Image Canvas / Viewport -->
+        <div class="canvas-viewport" id="canvas-viewport">
+          
+          <!-- Empty / Idle State -->
+          <div class="canvas-idle-state" id="canvas-idle-state">
+            <div class="idle-illustration">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            <h3>Waiting for Asset Selection</h3>
+            <p>Select any image from the metadata table to measure server-to-client retrieval latency in real time.</p>
+          </div>
+
+          <!-- Loading State -->
+          <div class="canvas-loading-state" id="canvas-loading-state" style="display: none;">
+            <div class="pulsing-loader"></div>
+            <div class="loading-text" id="loading-text">Fetching payload from storage...</div>
+          </div>
+
+          <!-- Rendered Image Display -->
+          <div class="canvas-display" id="canvas-display" style="display: none;">
+            <div class="image-frame">
+              <img id="rendered-image" alt="Rendered Preview" src="" />
+            </div>
+            
+            <div class="asset-meta-overlay">
+              <div class="meta-tag">
+                <span class="meta-tag-k">Filename:</span>
+                <span class="meta-tag-v" id="meta-val-name">--</span>
+              </div>
+              <div class="meta-tag">
+                <span class="meta-tag-k">Size:</span>
+                <span class="meta-tag-v" id="meta-val-size">--</span>
+              </div>
+              <div class="meta-tag">
+                <span class="meta-tag-k">Source:</span>
+                <span class="meta-tag-v tag-highlight" id="meta-val-source">--</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- HIGH-IMPACT RESPONSE TIME IN MS DISPLAY (Saroj's Primary Requirement) -->
+        <div class="latency-kpi-hub" id="latency-kpi-hub">
+          
+          <div class="kpi-main-block">
+            <div class="kpi-badge-row">
+              <span class="kpi-tag">BENCHMARK METRIC</span>
+              <span class="kpi-status-chip chip-optimal" id="kpi-status-chip">OPTIMAL</span>
+            </div>
+            <div class="kpi-title">RESPONSE TIME - MS</div>
+            <div class="kpi-big-number" id="kpi-big-number">
+              --<span class="kpi-unit">ms</span>
+            </div>
+          </div>
+
+          <div class="kpi-telemetry-grid">
+            <div class="telemetry-card">
+              <div class="tel-label">Server Latency</div>
+              <div class="tel-val" id="tel-server">-- ms</div>
+              <div class="tel-bar-wrap"><div class="tel-bar" id="tel-bar-server" style="width: 10%;"></div></div>
+            </div>
+            <div class="telemetry-card">
+              <div class="tel-label">Network & Client Render</div>
+              <div class="tel-val" id="tel-client">-- ms</div>
+              <div class="tel-bar-wrap"><div class="tel-bar" id="tel-bar-client" style="width: 25%;"></div></div>
+            </div>
+            <div class="telemetry-card">
+              <div class="tel-label">Payload Transfer</div>
+              <div class="tel-val" id="tel-payload">-- KB</div>
+              <div class="tel-bar-wrap"><div class="tel-bar" id="tel-bar-payload" style="width: 40%;"></div></div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Bottom Executive Scorecard -->
+    <footer class="app-scorecard">
+      <div class="scorecard-title-group">
+        <span class="sc-badge">CLIENT DEMO KPI COCKPIT</span>
+        <span class="sc-sub">Real-time Comparative Telemetry</span>
+      </div>
+
+      <div class="scorecard-metrics">
+        <div class="metric-cell">
+          <div class="mc-label">Option 1 (DB BLOB) Avg</div>
+          <div class="mc-val mc-amber" id="sc-opt1-avg">-- ms</div>
+          <div class="mc-desc">Relational DB Bottleneck</div>
+        </div>
+
+        <div class="metric-cell">
+          <div class="mc-label">Option 2 (Object Storage) Avg</div>
+          <div class="mc-val mc-green" id="sc-opt2-avg">-- ms</div>
+          <div class="mc-desc">GCS / ADLS Cloud Optimized</div>
+        </div>
+
+        <div class="metric-cell metric-cell-hero">
+          <div class="mc-label">Net Performance Boost</div>
+          <div class="mc-val mc-speedup" id="sc-speedup">--x</div>
+          <div class="mc-desc">Faster Single-Asset Retrieval</div>
+        </div>
+
+        <div class="metric-cell">
+          <div class="mc-label">Database Storage Saved</div>
+          <div class="mc-val mc-cyan" id="sc-db-saved">98.5%</div>
+          <div class="mc-desc">Binary Data Completely Offloaded</div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Architecture Blueprint Modal -->
+  <div class="modal-overlay" id="modal-arch" style="display: none;">
+    <div class="modal-card modal-card-large">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge">Architecture Blueprint</div>
+          <h2>Storage Architecture Comparison Model</h2>
+        </div>
+        <button class="modal-close-btn" id="btn-close-arch">&times;</button>
+      </div>
+      <div class="modal-body blueprint-body">
+        <div class="blueprint-grid">
+          
+          <div class="bp-column">
+            <div class="bp-tag tag-dev">GCP Development Stack</div>
+            <div class="bp-box">
+              <h4>Option 1: Database BLOB</h4>
+              <p>Client Browser ➔ Backend API ➔ <strong>Google Cloud SQL</strong> (stores Base64 / LONGBLOB).</p>
+              <div class="bp-meter meter-heavy">High DB I/O & Memory Pressure</div>
+            </div>
+            <div class="bp-box bp-recommended">
+              <div class="rec-badge">Proposed Solution</div>
+              <h4>Option 2: Hybrid Object Storage</h4>
+              <p>Client Browser ➔ Backend API ➔ <strong>Cloud SQL</strong> (Metadata only) + <strong>Google Cloud Storage (GCS)</strong> (Images).</p>
+              <div class="bp-meter meter-light">Scalable, Ultra-Fast Latency</div>
+            </div>
+          </div>
+
+          <div class="bp-column">
+            <div class="bp-tag tag-azure">Azure Deployment Target</div>
+            <div class="bp-box">
+              <h4>Option 1: Database BLOB</h4>
+              <p>Client Browser ➔ Backend API ➔ <strong>Azure SQL / MSSQL</strong> (stores VARBINARY(MAX)).</p>
+              <div class="bp-meter meter-heavy">High DTU / vCore Utilization</div>
+            </div>
+            <div class="bp-box bp-recommended">
+              <div class="rec-badge">Client Target</div>
+              <h4>Option 2: Hybrid Object Storage</h4>
+              <p>Client Browser ➔ Backend API ➔ <strong>MSSQL</strong> (Metadata only) + <strong>Azure Data Lake Storage (ADLS)</strong> (Images).</p>
+              <div class="bp-meter meter-light">Infinite Scale & CDN Integration</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="modal-upload" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge">Asset Ingestion</div>
+          <h2>Upload Custom Test Image</h2>
+        </div>
+        <button class="modal-close-btn" id="btn-close-upload">&times;</button>
+      </div>
+      <form id="upload-form" class="modal-body">
+        <div class="form-field">
+          <label class="field-label">Choose Local Image:</label>
+          <input type="file" id="upload-file-input" accept="image/*" required class="field-input-file" />
+          <span class="field-help">Supports PNG, JPG, WebP, GIF of any size (small KB to large MB).</span>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Benchmark Storage Target:</label>
+          <select id="upload-target-select" class="field-select">
+            <option value="3">Both (Option 1 & Option 2) - Compare Both</option>
+            <option value="1">Option 1 Only (Database BLOB)</option>
+            <option value="2">Option 2 Only (Object Storage)</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="action-btn action-btn-secondary" id="btn-cancel-upload">Cancel</button>
+          <button type="submit" class="action-btn action-btn-primary">Upload & Seed</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

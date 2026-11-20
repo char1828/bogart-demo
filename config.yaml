@@ -1,0 +1,55 @@
+
+active_profile: "gcp"
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+  reload: true
+
+
+benchmark:
+  enable_high_precision_timer: true
+
+
+profiles:
+  gcp:
+    cloud_provider: "gcp"
+    project_id: "sss-gov"
+    database:
+      type: "postgres"
+      instance_connection_name: "sss-gov:asia-south1:database1"
+      host: "34.100.168.214"
+      port: 5432
+      database: "benchmark_db"
+      user: "benchmark_user"
+      password: "Benchmark#2026!GCP"
+    storage:
+      provider: "gcs"
+      bucket_name: "cloud-storage-benchmark-sss-gov"
+      base_path: "benchmark_images"
+
+
+  local:
+    cloud_provider: "local"
+    database:
+      type: "sqlite"
+      database: "cloud_benchmark.db"
+      sqlite_path: "cloud_benchmark.db"
+    storage:
+      provider: "local"
+      local_dir: "data/object_store"
+
+ 
+  azure:
+    cloud_provider: "azure"
+    database:
+      type: "mssql"
+      host: "cloud-server.database.windows.net"
+      port: 1433
+      database: "benchmark_db"
+      user: "benchmark_admin"
+      password: ""
+    storage:
+      provider: "adls"
+      account_name: "cloudstorage"
+      container_name: "benchmark-images"
