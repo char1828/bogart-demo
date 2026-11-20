@@ -197,10 +197,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <td class="col-name">${rec.name}</td>
         <td class="col-size"><span class="badge-payload">${formattedSize}</span></td>
         <td class="col-mime">${rec.img_type}</td>
-        ${pathHtml}
         <td class="col-action">
-          <button class="btn-fetch" data-id="${rec.id}">Benchmark</button>
+          <button class="btn-fetch" data-id="${rec.id}">View Img</button>
         </td>
+        ${pathHtml}
       `;
 
       tr.addEventListener("click", () => executeBenchmark(rec));
