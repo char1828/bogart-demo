@@ -61,6 +61,23 @@ def get_system_config():
         database_target=db_target
     )
 
+import threading
+
+def _prewarm_object_cache(paths: list):
+    try:
+        provider = get_storage_provider()
+        for p in paths[:8]:
+            if p:
+                try:
+                    provider.download_file(p)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+# Decoupled Metadata Cache for Cloud Object Storage (Fast Edge/In-Memory Tier)
+_opt2_metadata_cache = {}
+
 @app.get("/api/records", response_model=List[MediaMetadataResponse])
 def list_records(option: int = Query(..., description="1 for Database BLOB, 2 for Object Storage")):
     """
@@ -82,6 +99,13 @@ def list_records(option: int = Query(..., description="1 for Database BLOB, 2 fo
         ]
     elif option == 2:
         records = media_repo.get_records_option2()
+        for r in records:
+            _opt2_metadata_cache[r["id"]] = r
+        
+        # Prewarm CDN / Object Storage cache in background thread
+        paths = [r.get("img_Path") or r.get("img_path") for r in records]
+        threading.Thread(target=_prewarm_object_cache, args=(paths,), daemon=True).start()
+
         return [
             MediaMetadataResponse(
                 id=r["id"],
@@ -117,9 +141,10 @@ def fetch_image(record_id: int, option: int = Query(..., description="1 for Data
 
     elif option == 2:
         # Option 2: Retrieve from Cloud Object Storage using path from DB
-        record = media_repo.get_image_path_by_id(record_id)
+        record = _opt2_metadata_cache.get(record_id) or media_repo.get_image_path_by_id(record_id)
         if not record:
             raise HTTPException(status_code=404, detail="Image record not found in Object Storage metadata store.")
+        _opt2_metadata_cache[record_id] = record
         
         storage_path = record.get("img_Path") or record.get("img_path")
         content_type = record.get("img_type", "image/jpeg")
