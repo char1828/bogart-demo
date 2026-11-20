@@ -4,14 +4,14 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
+      - 'asia-south1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
       - '.'
 
   # 2. Push the container image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
+      - 'asia-south1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
 
   # 3. Deploy to Cloud Run using the Default Compute Service Account
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -20,11 +20,11 @@ steps:
       - 'run'
       - 'deploy'
       - 'bogart-demo'
-      - '--image=us-central1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
-      - '--region=us-central1'
+      - '--image=asia-south1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
+      - '--region=asia-south1'
       - '--service-account=768572119302-compute@developer.gserviceaccount.com'
       - '--allow-unauthenticated'
       - '--quiet'
 
 images:
-  - 'us-central1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
+  - 'asia-south1-docker.pkg.dev/sss-gov/cloud-run-source-deploy/bogart-demo:latest'
