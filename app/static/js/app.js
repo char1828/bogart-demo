@@ -63,11 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const telBarClient = document.getElementById("tel-bar-client");
   const telBarPayload = document.getElementById("tel-bar-payload");
 
-  // Executive Scorecard Elements
-  const scOpt1Avg = document.getElementById("sc-opt1-avg");
-  const scOpt2Avg = document.getElementById("sc-opt2-avg");
-  const scSpeedup = document.getElementById("sc-speedup");
-  const scDbSaved = document.getElementById("sc-db-saved");
 
   // Modals & Buttons
   const btnSeed = document.getElementById("btn-seed");
@@ -323,24 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateExecutiveScorecard() {
-    const avg1 = metricsHistory.option1.length > 0
-      ? (metricsHistory.option1.reduce((a, b) => a + b, 0) / metricsHistory.option1.length).toFixed(1)
-      : null;
-
-    const avg2 = metricsHistory.option2.length > 0
-      ? (metricsHistory.option2.reduce((a, b) => a + b, 0) / metricsHistory.option2.length).toFixed(1)
-      : null;
-
-    scOpt1Avg.textContent = avg1 ? `${avg1} ms` : "-- ms";
-    scOpt2Avg.textContent = avg2 ? `${avg2} ms` : "-- ms";
-
-    if (avg1 && avg2 && parseFloat(avg2) > 0) {
-      const speedup = (parseFloat(avg1) / parseFloat(avg2)).toFixed(1);
-      scSpeedup.textContent = `${speedup}x`;
-      scSpeedup.style.color = parseFloat(speedup) >= 1.0 ? "var(--accent-cyan)" : "var(--accent-amber)";
-    } else {
-      scSpeedup.textContent = "--x";
-    }
+    // Scorecard removed from UI
   }
 
   // ==========================================================================
