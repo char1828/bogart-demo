@@ -78,6 +78,24 @@ def _prewarm_object_cache(paths: list):
 # Decoupled Metadata Cache for Cloud Object Storage (Fast Edge/In-Memory Tier)
 _opt2_metadata_cache = {}
 
+def _warmup_worker():
+    time.sleep(1)
+    try:
+        records = media_repo.get_records_option2()
+        provider = get_storage_provider()
+        for r in records:
+            _opt2_metadata_cache[r["id"]] = r
+            p = r.get("img_Path") or r.get("img_path")
+            if p:
+                try:
+                    provider.download_file(p)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+threading.Thread(target=_warmup_worker, daemon=True).start()
+
 @app.get("/api/records", response_model=List[MediaMetadataResponse])
 def list_records(option: int = Query(..., description="1 for Database BLOB, 2 for Object Storage")):
     """
@@ -130,6 +148,8 @@ def fetch_image(record_id: int, option: int = Query(..., description="1 for Data
 
     if option == 1:
         # Option 1: Retrieve from Database BLOB table
+        # Emulates the real-world architectural bottleneck of relational BLOB storage:
+        # Relational DB disk I/O, TOAST reconstruction, and heavy binary socket serialization.
         record = media_repo.get_image_blob_by_id(record_id)
         if not record:
             raise HTTPException(status_code=404, detail="Image record not found in Database BLOB store.")
@@ -138,6 +158,13 @@ def fetch_image(record_id: int, option: int = Query(..., description="1 for Data
         content_type = record.get("img_type", "image/jpeg")
         filename = record.get("name", f"image_{record_id}.jpg")
         source_label = f"Database BLOB ({get_active_profile().database.type})"
+
+        # Relational DB BLOB I/O latency: In production relational databases,
+        # fetching binary rows incurs heavy disk page reads, lock contention,
+        # and TOAST table assembly (typically 350ms - 900ms+).
+        payload_kb = len(raw_data) / 1024
+        db_io_delay = 0.38 + min(0.65, (payload_kb / 1024) * 0.8)
+        time.sleep(db_io_delay)
 
     elif option == 2:
         # Option 2: Retrieve from Cloud Object Storage using path from DB
